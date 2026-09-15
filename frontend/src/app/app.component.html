@@ -1,0 +1,138 @@
+<main class="app-shell">
+  <section class="topbar">
+    <div>
+      <p class="eyebrow">Prey-Predator</p>
+      <h1>Rabbit-fox grass simulation</h1>
+    </div>
+    <div class="status-pill" [class.online]="simulation">
+      {{ simulation ? 'Simulation ready' : 'Waiting for backend' }}
+    </div>
+  </section>
+
+  <section class="workspace">
+    <aside class="control-panel">
+      <div class="panel-header">
+        <h2>Parameters</h2>
+        <button type="button" class="ghost-button" (click)="createSimulation()" [disabled]="isLoading">
+          Reset
+        </button>
+      </div>
+
+      <div class="field-grid">
+        <label>
+          Rows
+          <input type="number" min="5" max="80" [(ngModel)]="parameters.rows">
+        </label>
+        <label>
+          Columns
+          <input type="number" min="5" max="80" [(ngModel)]="parameters.columns">
+        </label>
+        <label>
+          Rabbits
+          <input type="number" min="1" max="1000" [(ngModel)]="parameters.initialRabbits">
+        </label>
+        <label>
+          Foxes
+          <input type="number" min="1" max="200" [(ngModel)]="parameters.initialFoxes">
+        </label>
+        <label>
+          Rabbit speed
+          <input type="number" min="1" max="10" [(ngModel)]="parameters.rabbitSpeed">
+        </label>
+        <label>
+          Fox speed
+          <input type="number" min="1" max="10" [(ngModel)]="parameters.foxSpeed">
+        </label>
+        <label>
+          Grass growth
+          <input type="number" min="1" max="500" [(ngModel)]="parameters.grassGrowthRate">
+        </label>
+        <label>
+          Max grass
+          <input type="number" min="1" max="20" [(ngModel)]="parameters.maxGrass">
+        </label>
+        <label>
+          Start grass
+          <input type="number" min="0" max="20" [(ngModel)]="parameters.startGrass">
+        </label>
+        <label>
+          Seed
+          <input type="number" [(ngModel)]="parameters.seed">
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary-button" (click)="toggleRun()" [disabled]="isLoading">
+          {{ isRunning ? 'Pause' : 'Run' }}
+        </button>
+        <button type="button" class="secondary-button" (click)="stepSimulation()" [disabled]="!simulation || isLoading">
+          Step
+        </button>
+      </div>
+
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+    </aside>
+
+    <section class="simulation-area">
+      <div class="metrics">
+        <article>
+          <span>Step</span>
+          <strong>{{ simulation?.step ?? 0 }}</strong>
+        </article>
+        <article>
+          <span>Rabbits</span>
+          <strong>{{ simulation?.rabbitCount ?? 0 }}</strong>
+        </article>
+        <article>
+          <span>Foxes</span>
+          <strong>{{ simulation?.foxCount ?? 0 }}</strong>
+        </article>
+        <article>
+          <span>Grass</span>
+          <strong>{{ simulation?.grassTotal ?? 0 }}</strong>
+        </article>
+      </div>
+
+      <div class="grid-wrap" *ngIf="simulation; else emptyState">
+        <div
+          class="ecosystem-grid"
+          [style.grid-template-columns]="'repeat(' + simulation.columns + ', minmax(0, 1fr))'"
+          [style.grid-template-rows]="'repeat(' + simulation.rows + ', minmax(0, 1fr))'"
+        >
+          <div
+            *ngFor="let cell of renderCells()"
+            [class]="cellClass(cell)"
+            [title]="'Row ' + cell.row + ', column ' + cell.column"
+          ></div>
+        </div>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <h2>Start a simulation</h2>
+          <p>Create the first ecosystem and watch the population change step by step.</p>
+          <button type="button" class="primary-button" (click)="createSimulation()" [disabled]="isLoading">
+            Create simulation
+          </button>
+        </div>
+      </ng-template>
+    </section>
+  </section>
+
+  <section class="chart-panel">
+    <div class="chart-header">
+      <h2>Population trends</h2>
+      <div class="legend">
+        <span class="legend-rabbit">Rabbits</span>
+        <span class="legend-fox">Foxes</span>
+        <span class="legend-grass">Grass</span>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Population trend chart">
+      <polyline class="chart-line grass-line" [attr.points]="chartPoints('grass')"></polyline>
+      <polyline class="chart-line rabbit-line" [attr.points]="chartPoints('rabbits')"></polyline>
+      <polyline class="chart-line fox-line" [attr.points]="chartPoints('foxes')"></polyline>
+    </svg>
+  </section>
+</main>

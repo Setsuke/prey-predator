@@ -5,6 +5,10 @@
 target/
 build/
 out/
+dist/
+node_modules/
+.angular/
+coverage/
 
 .DS_Store
 Thumbs.db
