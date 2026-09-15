@@ -1,6 +1,8 @@
-# Ecosystem Sandbox Backend
+# Prey-Predator Backend
 
-Simple Spring Boot backend for an interactive predator-prey simulation.
+Simple Spring Boot backend for an interactive rabbit-fox-grass simulation.
+
+The simulation follows a lab-style agent model: rabbits move through a grid and eat grass, foxes move faster and hunt rabbits, and grass regrows up to a maximum level.
 
 ## Stack
 
@@ -44,7 +46,7 @@ curl -X POST http://localhost:8080/api/simulations/{id}/steps
 ## Structure
 
 ```text
-com.ecosystemsandbox
+com.preypredator
 ├── common
 │   └── api
 └── simulation
